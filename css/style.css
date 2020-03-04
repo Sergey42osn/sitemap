@@ -1,0 +1,33 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+.aligen_centr {
+    text-align: center;
+}
+body {
+    height: 100vh;
+}
+.con {
+
+    min-height: 100%;
+    }
+.box_h_3 {
+    padding-top: 10%;
+}
+.col-con-box {
+    width: 40%;
+    margin: 0 auto;
+}
+.col-con-box_form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.box_form_input {
+    width: 100%;
+    margin: 20px 0;
+}
+.domain {
+    width: 80%;
+}
