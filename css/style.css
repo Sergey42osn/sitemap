@@ -31,3 +31,6 @@ body {
 .domain {
     width: 80%;
 }
+.col-con-box_form form {
+    width: 100%;
+}
