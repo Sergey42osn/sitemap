@@ -50,39 +50,18 @@
 
     }
 
-    function writeAttrProductPage($html, $href, $data, $folder){
+    function writeHrefToFile($href){
 
-       //$write_img = 0;
-
-        $arr = [];
-
-        $product_name = $html->find(".product-props__head",0);
-        $span = $html->find(".product-props__head span",0);
-        $price_prod = $span->innertext;
-        $span->outertext  = '';
-        $product_name = $product_name->innertext;
-
-        if ($data == 1 ) {
-
-            $file = 'bd.txt';
+            $file = 'sitemap.txt';
             // Открываем файл для получения существующего содержимого
             $current = file_get_contents($file);
             // Добавляем нового человека в файл
             //$current .= "$href;$product_name;$price_prod\n";
-            $current = "$href;";
-            $current .= "$product_name;";
-            $current .= "$price_prod\n";
+            $current = "$href\n";
             // Пишем содержимое обратно в файл
-            file_put_contents($file, $current,FILE_APPEND);
+            $res = file_put_contents($file, $current,FILE_APPEND);
 
-            }
-
-        $write_img = writeImage($html, $folder);
-
-        echo $write_img.'<br>';
-
-        //echo $product_name.'<br>';
-        //echo $price_prod.'<br>';
+            echo $res.'<br>';
 
     }
 
