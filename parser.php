@@ -1,56 +1,113 @@
 ﻿<?php
 
-	echo "333";
-
 	require_once 'function.php';
 	require_once 'simple_html_dom.php';
 
 	set_time_limit(15);
 
-	if (!isset($_GET["val"]) || $_GET["val"] == '' ) {
+	$href_arr = [];
+
+	if ($_GET["val"] == '' ) {
 		echo 'Нет данных';
 		return;
+	}else{
+		$domain = trim($_GET["val"]);
+		$domain_pars = parse_url($domain);
+		$domain_host = $domain_pars["host"];
+		$domain = $domain_pars["scheme"].'://'.$domain_host;
 	}
 
-	$domain = trim($_GET["val"]);
+	//echo 'host='.$domain.'<br>';
 
 	if (!file_exists('sitemap.txt')) {
-		$xml = 'sitemap.txt';
-		file_put_contents($xml, '');
+		$txt = 'sitemap.txt';
+		file_put_contents($txt, '');
 	}
 
-	$file = 'sitemap.txt';
-	$res = file($file);
-	$count = count($res);
+	if (!file_exists('tmp_sitemap.txt')) {
+		$txt = 'tmp_sitemap.txt';
+		file_put_contents($txt, '');
+	}
 
-	var_dump(count($res));
+	if (!file_exists('houme_sitemap.txt')) {
+		$txt = 'houme_sitemap.txt';
+		file_put_contents($txt, '');
 
-	if ($count < 1) {
-		$href_f = $domain;
+		$href_f = getHrefTmp($domain);
+		//echo $href_f.'<br>';
+
+		$html = getHome($href_f);
+
+		$res = addHrefArray($href_f, $html, $domain, $domain_pars);
+
+		foreach ($res as $value) {
+	       $res = writeHrefToFile($value, 'houme_sitemap.txt');
+	    }
+
+	    echo "Главная загружена";
+
+
+
 	}else{
-		$href_f = $res[$count -1];
+
+		$href_tmp = getHrefs('tmp_sitemap.txt');
+		$href_houme = getHrefs('houme_sitemap.txt');
+
+		//var_dump($href_houme);
+
+		foreach ($href_houme as $value) {
+			//var_dump($value);
+			if ($value != $href_tmp[count($href_tmp)-1]) {
+	
+
+				$html = getHome($value);
+				echo $html;
+
+				$res = addHrefArray($href_f = '', $html, $domain, $domain_pars);
+
+				foreach ($res as $key => $value) {
+			       $res = writeHrefToFile($value, 'sitemap.txt');
+			    }	
+			}
+		}
+
+		$href_f = getHrefTmp($domain);
+		//echo $href_f.'<br>';
+
+		$html = getHome($href_f);
+
+		$href_array = addHrefArray($href_f, $html, $domain, $domain_pars);
+
+		var_dump($href_array);
+
+		if ($href_array) {
+
+		    foreach ($href_array as $key => $value) {
+		       $res = writeHrefToFile($value, 'sitemap.txt');
+		    }
+
+		    if ($res) {
+		        writeHrefToFile($href_f, 'tmp_sitemap.txt');
+		    }
+
+			$file = 'sitemap.txt';
+			$hrefs = getHrefs($file);
+			//var_dump($hrefs);
+
+			foreach ($hrefs as $href) {
+				//var_dump($hrefs);
+				$href_tmp = getHrefTmp();
+
+
+				$html = getHome($href);
+			}
+		}
 	}
 
-	echo $href_f.'<br>';
 
-	$html = getHome($domain);
-	//echo $html;
-	$html = str_get_html($html);
-	$a = $html->find("a");
 
-	foreach ($a as $key => $value) {
-		$href = $value->href;
-		$path_info = pathinfo($value->href);
+	//$href_arr[] = $domain;
 
-		if (strlen($path_info["dirname"]) <= 1) {
-			$href = $domain;
-		}
-		elseif ($path_info["basename"] == '' || strlen($path_info["basename"]) == 1) {
-			return;
-		}
-
-		var_dump($path_info);
-		writeHrefToFile($href);
-	}
+	//writeHrefToFile($href_f, 'tmp_sitemap.txt');
 
 ?>

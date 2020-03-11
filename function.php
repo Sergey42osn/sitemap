@@ -50,9 +50,11 @@
 
     }
 
-    function writeHrefToFile($href){
+    function writeHrefToFile($href, $file){
 
-            $file = 'sitemap.txt';
+            //echo $href.'<br>';
+
+           // $file = 'sitemap.txt';
             // Открываем файл для получения существующего содержимого
             $current = file_get_contents($file);
             // Добавляем нового человека в файл
@@ -61,8 +63,77 @@
             // Пишем содержимое обратно в файл
             $res = file_put_contents($file, $current,FILE_APPEND);
 
-            echo $res.'<br>';
+            if ($res) {
+                return true;
+            }
 
+    }
+
+    function addHrefArray($href_f = '', $html, $domain, $domain_pars){
+
+        $href_arr = [];
+
+        $html = str_get_html($html);
+        $a = $html->find("a");
+
+        foreach ($a as $key => $value) {
+            $href = $value->href;
+
+            $path_info = parse_url($value->href);
+            $scema = $path_info["scheme"];
+            $host = $path_info["host"];
+            
+            if (strlen($href) >3) {
+                if ($host == $domain_pars["host"] && $path_info["path"] != '') {                
+                    if (strlen($path_info["path"]) > 2 ) {
+                        //echo $path_info["path"].'<br>';
+                        //$path = $href;
+                        //$path = $href;
+                        $path = $href;
+                    }
+                }elseif ($host == '') {
+                    //echo $path_info["path"].'<br>';
+                    if (strrpos($path_info["path"], '@') === false) {
+                        if (strpos($path_info["path"], "..") === false) {
+                            $path = $domain.$path_info["path"];
+                        }
+                    }
+                }
+                if (!in_array($path, $href_arr)) {
+                    $href_arr[] = $path;
+                }
+            }
+        }
+
+        return $href_arr;
+    }
+
+    function getHrefs($file){
+
+        $res = file($file);
+       //href $count = count($res);
+        //var_dump($res[$count - 1]);
+
+        return $res;
+    }
+
+    function getHrefTmp($domain = ''){
+
+        $file = 'tmp_sitemap.txt';
+        $res = file($file);
+        $count = count($res);
+
+        //var_dump(count($res));
+
+        if ($count < 1) {
+            $href_f = $domain;
+        }else{
+            $href_f = $res[$count -1];
+        }
+
+         writeHrefToFile($href_f, 'tmp_sitemap.txt');
+
+        return $href_f;
     }
 
     ?>
